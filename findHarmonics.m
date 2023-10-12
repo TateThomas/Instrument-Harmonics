@@ -8,8 +8,12 @@ function [locations, relativeAmplitudes] = findHarmonics(X, Y, n, minPeak)
     function [peakIndex] = searchInRange(y, start, finish)
         % Finds the max peak in a given range of Y values
 
+        % round numbers in case of non-integer start/finish values
+        start = round(start);
+        finish = round(finish);
+
         % correct start and finish if they are out of range
-        if start < 0
+        if start < 1
             start = 1;
         end
         if finish > length(y)
@@ -33,7 +37,7 @@ function [locations, relativeAmplitudes] = findHarmonics(X, Y, n, minPeak)
     end
 
     firstI = 0;     % index of first harmonic
-    maxAmplitude = 0;   % amplitude of first harmonic
+    firstAmplitude = 0;   % amplitude of first harmonic
     ERROR_RANGE = 50;    % range of numbers to check for the peak around
 
     locations = zeros(1, n);   % frequencies of where the harmonics are found
@@ -46,31 +50,22 @@ function [locations, relativeAmplitudes] = findHarmonics(X, Y, n, minPeak)
         if (harmonicsFound == 0) && (Y(i) >= minPeak)
 
             [index] = searchInRange(Y, i - (ERROR_RANGE / 2), i + (ERROR_RANGE / 2));
+            
             firstI = index;
-            maxAmplitude = Y(index);
-            locations(1, harmonicsFound + 1) = X(index);
-            relativeAmplitudes(1, harmonicsFound + 1) = 1;
-            i = i + firstI;
+            firstAmplitude = Y(index);
             harmonicsFound = harmonicsFound + 1;
+            locations(1, harmonicsFound) = X(index);
+            relativeAmplitudes(1, harmonicsFound) = 1;
+            i = i + firstI;
 
         elseif harmonicsFound > 0
 
             [index] = searchInRange(Y, i - (ERROR_RANGE / 2), i + (ERROR_RANGE / 2));
 
-            if Y(index) >= maxAmplitude
-                % since the peak found is greater than the maxAmplitude,
-                % this peak must be the actual first harmonic
-                firstI = index;
-                maxAmplitude = Y(index);
-                locations(1, 1) = X(index);
-                harmonicsFound = 1;
-                i = i + firstI;
-            else
-                locations(1, harmonicsFound + 1) = X(index);
-                relativeAmplitudes(1, harmonicsFound + 1) = Y(index) / maxAmplitude;
-                i = i + firstI;
-                harmonicsFound = harmonicsFound + 1;
-            end
+            harmonicsFound = harmonicsFound + 1;
+            locations(1, harmonicsFound) = X(index);
+            relativeAmplitudes(1, harmonicsFound) = Y(index) / firstAmplitude;
+            i = i + firstI;
 
         else
 

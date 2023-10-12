@@ -14,7 +14,6 @@ function [X, Y] = recordSample(sampleFrequency, sampleDuration, nBits, nChannels
     myRecording = getaudiodata(recObj);
     myFFT = fft(myRecording);
     
-    %X = sampleFrequency/L*(0:L/2);
     X = (1/sampleDuration) * (0:L/2);
     fftY = abs(fftshift(myFFT));
     Y = fftY(L/2:L);
