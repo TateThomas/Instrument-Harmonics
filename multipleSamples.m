@@ -1,9 +1,9 @@
 
 % SAMPLE VARIABLES
-nSets = 2;               % number of sets of samples
-nSamples = 2;            % number of samples to take
-countdownTime = .75;     % time between countdown numbers
-restTime = 2;            % time in seconds between samples
+nSets = 1;               % number of sets of samples
+nSamples = 10;            % number of samples to take
+countdownTime = .25;     % time between countdown numbers
+restTime = .5;            % time in seconds between samples
 
 % RECORDING VARIABLES
 Fs = 44100;         % sampling frequency
@@ -12,7 +12,7 @@ nBits = 16;         % sample bit precision
 nChannels = 2;
 
 % HARMONICS VARIABLES
-minPeak = 500;      % minimum amplitude of first harmonic peak
+minPeak = 150;      % minimum amplitude of first harmonic peak
 nHarmonics = 15;    % number of harmonics to find
 
 % PLOT VARIABLES
@@ -46,6 +46,7 @@ for i = 1:nSets
     fprintf('\n\nSET %d:\n', i);
     setName = input('What is the name of this set of samples?', 's');
 
+    %hold on
     for j = 1:nSamples
 
         % countdown
@@ -60,10 +61,11 @@ for i = 1:nSets
 
         [x, y] = recordSample(Fs, recDuration, nBits, nChannels);   % records sample, performs fft
         [harmonicsData(j, :), relativeAmpData(j, :)] = findHarmonics(x, y, nHarmonics, minPeak);    % finds the harmonics in the fft data
-
+        %plot(x, y)
         pause(restTime)     % rest in between samples
 
     end
+    %hold off
 
     dataCollection{i, 1} = setName;             % add set name to cell array
     dataCollection{i, 2} = harmonicsData;       % add harmonics data to cell array
