@@ -1,4 +1,4 @@
-function [X, Y] = recordSample(sampleFrequency, sampleDuration, nBits, nChannels)
+function [X, Y] = recordSample(sampleFrequency, sampleDuration, nBits, nChannels, countdownTime)
     % records an audio sample and performs a fft on it, outputting the
     % positive real x and y.
 
@@ -6,6 +6,15 @@ function [X, Y] = recordSample(sampleFrequency, sampleDuration, nBits, nChannels
     ID = -1;       % default audio input device 
 
     recObj = audiorecorder(sampleFrequency, nBits, nChannels, ID);
+
+    % countdown
+    pause(countdownTime)
+    disp('3')
+    pause(countdownTime)
+    disp('2')
+    pause(countdownTime)
+    disp('1')
+    pause(countdownTime)
 
     disp("Start")
     recordblocking(recObj, sampleDuration);

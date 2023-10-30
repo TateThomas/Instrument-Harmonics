@@ -30,8 +30,11 @@ function [] = updateModelData(dataCell, overwrite)
         for j = 1:m
 
             instrumentNote = dataCell{i, 2}{j, 1};
-            %[modelData{instrumentIndex, 2}{:, 1}] == instrumentNote
-            noteIndex = find([modelData{instrumentIndex, 2}{:, 1}] == instrumentNote);
+            if isempty([modelData{instrumentIndex, 2}{:, 1}])
+                noteIndex = [];
+            else
+                noteIndex = find(string(modelData{instrumentIndex, 2}(:, 1)) == instrumentNote);
+            end
             measurementIndex = 3;
 
             if isempty(noteIndex)
