@@ -5,7 +5,7 @@ function [] = updateModelData(dataCell, overwrite)
         if overwrite
             error("Overwrite");
         end
-        modelData = load("modelData");
+        modelData = load("modelData").modelData;
         nInstruments = size(modelData, 1);  % number of rows in model data
     catch
         modelData = cell(1, 2);
@@ -16,7 +16,8 @@ function [] = updateModelData(dataCell, overwrite)
     for i = 1:n
 
         instrumentName = dataCell{i, 1};
-        instrumentIndex = find(strcmp(modelData{:, 1}, instrumentName));
+        %[modelData{:, 1}]
+        instrumentIndex = find(strcmp([modelData{:, 1}], instrumentName));
 
         if isempty(instrumentIndex)
             nInstruments = nInstruments + 1;
@@ -29,24 +30,21 @@ function [] = updateModelData(dataCell, overwrite)
         for j = 1:m
 
             instrumentNote = dataCell{i, 2}{j, 1};
-            %modelData{i, 2}
-            noteIndex = find(strcmp(modelData{i, 2}{:, 1}, instrumentNote));
+            %[modelData{instrumentIndex, 2}{:, 1}] == instrumentNote
+            noteIndex = find([modelData{instrumentIndex, 2}{:, 1}] == instrumentNote);
             measurementIndex = 3;
-            %noteIndex
 
             if isempty(noteIndex)
-                noteIndex = size(modelData{i, 2}, 1) + 1;
-                %modelData{i, 2}{1, 1}
-                if isempty(modelData{i, 2}{1, 1})
+                noteIndex = size(modelData{instrumentIndex, 2}, 1) + 1;
+                if isempty(modelData{instrumentIndex, 2}{1, 1})
                     noteIndex = 1;
                 end
-                modelData{i, 2}{noteIndex, 1} = instrumentNote;
-                modelData{i, 2}{noteIndex, 2} = dataCell{i, 2}{j, measurementIndex};
-                %modelData{i, 2}
+                modelData{instrumentIndex, 2}{noteIndex, 1} = instrumentNote;
+                modelData{instrumentIndex, 2}{noteIndex, 2} = dataCell{i, 2}{j, measurementIndex};
             else
-                nNoteSamples = size(modelData{i, 2}{noteIndex, measurementIndex}, 1);
+                nNoteSamples = size(modelData{instrumentIndex, 2}{noteIndex(1, 1), 2}, 1);
                 k = size(dataCell{i, 2}{j, measurementIndex}, 1);   % number of rows in given instrument note data
-                modelData{i, 2}{noteIndex, 2}(nNoteSamples+1:nNoteSamples+1+k, :) = dataCell{i, 2}{j, measurementIndex}(:, 1:10);
+                modelData{instrumentIndex, 2}{noteIndex(1, 1), 2}(nNoteSamples+1:nNoteSamples+k, :) = dataCell{i, 2}{j, measurementIndex};
             end
 
         end

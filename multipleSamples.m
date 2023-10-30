@@ -1,9 +1,9 @@
 
 % SAMPLE VARIABLES
-nSets = 1;               % number of sets of samples
-nSamples = 10;            % number of samples to take
-countdownTime = .25;     % time between countdown numbers
-restTime = .5;            % time in seconds between samples
+nSets = 0;               % number of sets of samples
+nSamples = 0;            % number of samples to take
+countdownTime = .75;     % time between countdown numbers
+restTime = 1.5;            % time in seconds between samples
 
 % RECORDING VARIABLES
 Fs = 44100;         % sampling frequency
@@ -12,7 +12,7 @@ nBits = 16;         % sample bit precision
 nChannels = 2;
 
 % HARMONICS VARIABLES
-minPeak = 150;      % minimum amplitude of first harmonic peak
+minPeak = 250;      % minimum amplitude of first harmonic peak
 nHarmonics = 15;    % number of harmonics to find
 
 % PLOT VARIABLES
@@ -32,12 +32,18 @@ plotSetsSeparate = true;                            % plot the sets on different
 harmonicsData = zeros(nSamples, nHarmonics);
 relativeAmpData = zeros(nSamples, nHarmonics);
 dataCollection = cell(nSets, 3);
+allData = cell(1, 2);
 
 % reset plots
 clf('reset');
 
 if ~plotSetsSeparate
     groupName = input('What is the name of this group of samples?', 's');   % all data is on one plot, needs name
+end
+
+if nSamples > 0
+    instrumentName = input('What is the instrument for these samples?', 's');
+    [allData{1, 1}] = instrumentName;
 end
 
 % sample iterations
@@ -106,5 +112,31 @@ for i = 1:nSets
     if plotSetsSeparate || (i == nSets)
         hold off
     end
+
+end
+
+if nSamples > 0
+    [allData{1, 2}] = deal(dataCollection);
+    updateModelData(allData, false);
+end
+[model, identifier] = createModel();
+
+userContinue = input("Would you like to test a sample? yes/no", 's') == "yes";
+while userContinue
+
+    % countdown
+    disp('3')
+    pause(countdownTime)
+    disp('2')
+    pause(countdownTime)
+    disp('1')
+    pause(countdownTime)
+
+    [x, y] = recordSample(Fs, recDuration, nBits, nChannels);   % records sample, performs fft
+    [testHarmonicsData, testRelativeAmpData] = findHarmonics(x, y, nHarmonics, minPeak);    % finds the harmonics in the fft data
+    
+    identifier(predict(model, testRelativeAmpData(1, 2:10)))
+
+    userContinue = input("Would you like to test another sample? yes/no", 's') == "yes";
 
 end
