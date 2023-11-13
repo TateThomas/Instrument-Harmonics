@@ -1,7 +1,7 @@
 
 % SAMPLE VARIABLES
-nSets = 6;               % number of sets of samples
-nSamples = 5;            % number of samples to take
+nSets = 0;               % number of sets of samples
+nSamples = 0;            % number of samples to take
 countdownTime = .75;     % time between countdown numbers
 restTime = 1.5;            % time in seconds between samples
 
@@ -56,6 +56,8 @@ for i = 1:nSets
 
         fprintf('\nSAMPLE %d:\n', j);
         [x, y] = recordSample(Fs, recDuration, nBits, nChannels, countdownTime);   % records sample, performs fft
+        %plot(x, y)
+        %input("continue?", "s")
         [tempHarmonicsData, tempRelativeAmpData] = findHarmonics(x, y, nHarmonics, minPeak);    % finds the harmonics in the fft data
         if sum(tempRelativeAmpData) ~= 0
             harmonicsData(j, :) = tempHarmonicsData;
@@ -125,7 +127,7 @@ while userContinue
     [x, y] = recordSample(Fs, recDuration, nBits, nChannels, countdownTime);   % records sample, performs fft
     [testHarmonicsData, testRelativeAmpData] = findHarmonics(x, y, nHarmonics, minPeak);    % finds the harmonics in the fft data
     
-    identifier(predict(model, testRelativeAmpData(1, 2:10)))
+    identifier(predict(model, testRelativeAmpData(1, 2:15)./testRelativeAmpData(1, 1)))
 
     userContinue = lower(input("Would you like to test another sample? yes/no", 's')) == "yes";
 

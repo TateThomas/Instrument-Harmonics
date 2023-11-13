@@ -55,7 +55,7 @@ function [locations, relativeAmplitudes] = findHarmonics(X, Y, n, minPeak)
             firstAmplitude = Y(index);
             harmonicsFound = harmonicsFound + 1;
             locations(1, harmonicsFound) = X(index);
-            relativeAmplitudes(1, harmonicsFound) = 1;
+            relativeAmplitudes(1, harmonicsFound) = firstAmplitude;
             i = i + firstI;
 
         elseif harmonicsFound > 0
@@ -64,7 +64,8 @@ function [locations, relativeAmplitudes] = findHarmonics(X, Y, n, minPeak)
 
             harmonicsFound = harmonicsFound + 1;
             locations(1, harmonicsFound) = X(index);
-            relativeAmplitudes(1, harmonicsFound) = Y(index) / firstAmplitude;
+            %relativeAmplitudes(1, harmonicsFound) = Y(index) / firstAmplitude;
+            relativeAmplitudes(1, harmonicsFound) = Y(index);
             i = i + firstI;
 
         else

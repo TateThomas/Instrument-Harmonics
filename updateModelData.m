@@ -5,7 +5,7 @@ function [] = updateModelData(dataCell, overwrite)
         if overwrite
             error("Overwrite");
         end
-        modelData = load("modelData").modelData;
+        modelData = load("modelData2").modelData;
         nInstruments = size(modelData, 1);  % number of rows in model data
     catch
         modelData = cell(1, 2);
@@ -54,6 +54,6 @@ function [] = updateModelData(dataCell, overwrite)
 
     end
 
-    save("modelData", "modelData");
+    save("modelData2", "modelData");
 
 end
