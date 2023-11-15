@@ -5,7 +5,7 @@ function [] = updateModelData(dataCell, overwrite)
         if overwrite
             error("Overwrite");
         end
-        modelData = load("modelData2").modelData;
+        modelData = load("modelData3").modelData;
         nInstruments = size(modelData, 1);  % number of rows in model data
     catch
         modelData = cell(1, 2);
@@ -16,8 +16,13 @@ function [] = updateModelData(dataCell, overwrite)
     for i = 1:n
 
         instrumentName = dataCell{i, 1};
-        %[modelData{:, 1}]
-        instrumentIndex = find(strcmp([modelData{:, 1}], instrumentName));
+        for k = 1:size(modelData, 1)
+            string(strcat(modelData{k, 1}));
+            instruments(1, k) = string(strcat(modelData{k, 1}));
+        end
+        %instruments
+
+        instrumentIndex = find(strcmp(instruments, instrumentName))
 
         if isempty(instrumentIndex)
             nInstruments = nInstruments + 1;
@@ -26,6 +31,8 @@ function [] = updateModelData(dataCell, overwrite)
             modelData{instrumentIndex, 2} = cell(1, 2);
         end
 
+        i
+        dataCell
         m = size(dataCell{i, 2}, 1);    % number of rows in given instrument data
         for j = 1:m
 
@@ -54,6 +61,6 @@ function [] = updateModelData(dataCell, overwrite)
 
     end
 
-    save("modelData2", "modelData");
+    save("modelData3", "modelData");
 
 end

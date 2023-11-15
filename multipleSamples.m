@@ -58,20 +58,44 @@ for i = 1:nSets
         [x, y] = recordSample(Fs, recDuration, nBits, nChannels, countdownTime);   % records sample, performs fft
         %plot(x, y)
         %input("continue?", "s")
-        [tempHarmonicsData, tempRelativeAmpData] = findHarmonics(x, y, nHarmonics, minPeak);    % finds the harmonics in the fft data
-        if sum(tempRelativeAmpData) ~= 0
-            harmonicsData(j, :) = tempHarmonicsData;
-            relativeAmpData(j, :) = tempRelativeAmpData;
-            j = j + 1;
-        else
-            disp('This sample has failed. Retry.')
+
+        [tempPks, tempLocs] = findAllHarmonics(x, y);
+
+        plot(x, y);
+        hold on
+        for k = 1:size(tempPks, 1)
+            plot(tempLocs(k, :), tempPks(k, :));
         end
+        hold off
+
+        %peaks f
+        if length(tempLocs) > 0
+            peaksFound = tempLocs(:, 1)
+        else
+            disp("No peaks found");
+        end
+        indexChosen = str2double(input("What index would you like to use?", "s"));
+        if indexChosen > 0
+            harmonicsData(j, :) = tempLocs(indexChosen, :);
+            relativeAmpData(j, :) = tempPks(indexChosen, :);
+            j = j + 1;
+        end
+
+        %[tempHarmonicsData, tempRelativeAmpData] = findHarmonics(x, y, nHarmonics, minPeak);    % finds the harmonics in the fft data
+        %if sum(tempRelativeAmpData) ~= 0
+        %    harmonicsData(j, :) = tempHarmonicsData;
+        %    relativeAmpData(j, :) = tempRelativeAmpData;
+        %    j = j + 1;
+        %else
+        %    disp('This sample has failed. Retry.')
+        %end
         %plot(x, y)
         pause(restTime)     % rest in between samples
 
     end
     %hold off
 
+    i
     dataCollection{i, 1} = setName;             % add set name to cell array
     dataCollection{i, 2} = harmonicsData;       % add harmonics data to cell array
     dataCollection{i, 3} = relativeAmpData;     % add relative amplitude data to cell array
@@ -127,7 +151,22 @@ while userContinue
     [x, y] = recordSample(Fs, recDuration, nBits, nChannels, countdownTime);   % records sample, performs fft
     [testHarmonicsData, testRelativeAmpData] = findHarmonics(x, y, nHarmonics, minPeak);    % finds the harmonics in the fft data
     
-    identifier(predict(model, testRelativeAmpData(1, 2:15)./testRelativeAmpData(1, 1)))
+    [pks, locs] = findAllHarmonics(x, y);
+
+    plot(x, y);
+    hold on
+    plot(testHarmonicsData, testRelativeAmpData);
+    xlim([0 3000]);
+
+    tateCode = identifier(predict(model, [testHarmonicsData(1) testRelativeAmpData(1, 2:15)./testRelativeAmpData(1, 1)]))
+    
+    for i = 1:size(pks, 1)
+        fprintf("Harmonic %d (Fundamental Freq %d) \n", i, locs(i, 1));
+        newCode = identifier(predict(model, [locs(i, 1) pks(i, 2:15)./pks(i, 1)]))
+        plot(locs(i, :), pks(i, :));
+    end
+
+    hold off
 
     userContinue = lower(input("Would you like to test another sample? yes/no", 's')) == "yes";
 
