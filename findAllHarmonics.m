@@ -4,6 +4,7 @@ function [peaksMatrix, locsMatrix] = findAllHarmonics(x, y)
     sigTest = 1:1:10;
     harmonicsFound = 0;
     syms t
+    clf
     factorN = 1;
     peaksMatrix = [];
     locsMatrix = [];
@@ -11,7 +12,13 @@ function [peaksMatrix, locsMatrix] = findAllHarmonics(x, y)
     while true
 
         try
-            [firstPks, firstLocs] = findpeaks(Y, "MinPeakHeight", 150, "NPeaks", 2, "MinPeakDistance", 50);
+            %[firstPks, firstLocs] = findpeaks(Y, "MinPeakHeight", 50, "NPeaks", 2, "MinPeakDistance", 50);
+            firstLocs = [];
+            minPkProm = 500;
+            while (length(firstLocs) < 2) || (minPkProm < 100)
+                [firstPks, firstLocs] = findpeaks(Y, "MinPeakProminence", minPkProm, "NPeaks", 2, "MinPeakDistance", 50);
+                minPkProm = round(minPkProm / 2);
+            end
             %round(firstPks(1) / 100)
             if firstLocs(1) > ((factorN*100) + 100)
                 factorN = factorN + 2;
@@ -19,7 +26,7 @@ function [peaksMatrix, locsMatrix] = findAllHarmonics(x, y)
             envelopeFunction = -(sin( (3*pi/2) + x.*(2*pi/x(firstLocs(1))) )).^factorN;
             harmonicExtract = (( envelopeFunction > 0 ).*envelopeFunction).*Y;
         catch
-            %disp("1")
+            disp("1")
             break
         end
         %x(firstLocs)
@@ -31,8 +38,15 @@ function [peaksMatrix, locsMatrix] = findAllHarmonics(x, y)
         %xlim([0 1000]);
         %input("continue", "s");
     
-        [pks, locs] = findpeaks(harmonicExtract, "MinPeakDistance", firstLocs(1) - 25);
-
+        %[pks, locs, w] = findpeaks(harmonicExtract, "MinPeakDistance", firstLocs(1) - 25);
+        if firstLocs(1) <= 25
+            errorMargin = 15;
+        else
+            errorMargin = 25;
+        end
+        [pks, locs] = findpeaks(harmonicExtract, "MinPeakDistance", firstLocs(1) - errorMargin);
+        
+        %x(locs(1))
         %length(locs)
 
         try
@@ -46,7 +60,7 @@ function [peaksMatrix, locsMatrix] = findAllHarmonics(x, y)
                 newLocs = x(locs(1:15));
             end
         catch
-            %disp("2")
+            disp("2")
             break
         end
 
@@ -63,13 +77,15 @@ function [peaksMatrix, locsMatrix] = findAllHarmonics(x, y)
         testSig = mod(newLocs(1:8), newLocs(1))./newLocs(1);
         %testSig > .9
         %testSig < .1
-        if ((sum(testSig > .1) == 0) || ((sum(testSig > .9) + sum(testSig < .1)) == 8)) && (sum(newPks < 1) == 0)
+        if ((sum(testSig > .9) + sum(testSig < .1)) == 8) && (sum(newPks < 1) == 0)
+        %if (sum(testSig > .9) + sum(testSig < .1)) == 8
             %mod(newLocs(1:8), newLocs(1))./newLocs(1)
 
             isRepeat = false;
             for i = 1:size(locsMatrix)
                 repeats = intersect(locsMatrix(i, :), newLocs);
                 if numel(repeats) >= 2
+                    %if ((2 * find(locsMatrix(i, :) == repeats(1))) == (find(locsMatrix(i, :) == repeats(2)))) && ((3 * find(locsMatrix(i, :) == repeats(1))) == (find(locsMatrix(i, :) == repeats(3))))
                     if (2 * find(locsMatrix(i, :) == repeats(1))) == (find(locsMatrix(i, :) == repeats(2)))
                         isRepeat = true;
                         break
@@ -96,7 +112,7 @@ function [peaksMatrix, locsMatrix] = findAllHarmonics(x, y)
         if length(firstLocs) == 2
             Y = Y.*(x > x(firstLocs(2)-10));
         else
-            %disp("3")
+            disp("3")
             break
         end
         %plot(x, Y);

@@ -16,7 +16,7 @@ minPeak = 250;      % minimum amplitude of first harmonic peak
 nHarmonics = 15;    % number of harmonics to find
 
 % PLOT VARIABLES
-colorStyles = ['r' 'g' 'b' 'c' 'm' 'y' 'k', 'w'];    % red, green, blue, cyan, magenta, yellow, black, white
+colorStyles = ['r' 'g' 'b' 'c' 'm' 'y' 'k' 'w'];    % red, green, blue, cyan, magenta, yellow, black, white
 lineStyles = [' ' '-' '--' ':' '-.'];                % none, solid line, dashed line, dotted line, dash-dotted line
 markerStyles = [' ' 'o' '+' '.' 'x' '_' '|'];        % none, circle, plus sign, point, cross, horizontal line, vertical line
 
@@ -95,7 +95,7 @@ for i = 1:nSets
     end
     %hold off
 
-    i
+    %i
     dataCollection{i, 1} = setName;             % add set name to cell array
     dataCollection{i, 2} = harmonicsData;       % add harmonics data to cell array
     dataCollection{i, 3} = relativeAmpData;     % add relative amplitude data to cell array
@@ -149,19 +149,19 @@ userContinue = lower(input("Would you like to test a sample? yes/no", 's')) == "
 while userContinue
 
     [x, y] = recordSample(Fs, recDuration, nBits, nChannels, countdownTime);   % records sample, performs fft
-    [testHarmonicsData, testRelativeAmpData] = findHarmonics(x, y, nHarmonics, minPeak);    % finds the harmonics in the fft data
+    %[testHarmonicsData, testRelativeAmpData] = findHarmonics(x, y, nHarmonics, minPeak);    % finds the harmonics in the fft data
     
     [pks, locs] = findAllHarmonics(x, y);
 
     plot(x, y);
     hold on
-    plot(testHarmonicsData, testRelativeAmpData);
+    %plot(testHarmonicsData, testRelativeAmpData);
     xlim([0 3000]);
 
-    tateCode = identifier(predict(model, [testHarmonicsData(1) testRelativeAmpData(1, 2:15)./testRelativeAmpData(1, 1)]))
+    %tateCode = identifier(predict(model, [testHarmonicsData(1) testRelativeAmpData(1, 2:15)./testRelativeAmpData(1, 1)]))
     
     for i = 1:size(pks, 1)
-        fprintf("Harmonic %d (Fundamental Freq %d) \n", i, locs(i, 1));
+        fprintf("Harmonic %d (Fundamental Freq %.1f) \n", i, locs(i, 1));
         newCode = identifier(predict(model, [locs(i, 1) pks(i, 2:15)./pks(i, 1)]))
         plot(locs(i, :), pks(i, :));
     end

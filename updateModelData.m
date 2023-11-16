@@ -22,7 +22,7 @@ function [] = updateModelData(dataCell, overwrite)
         end
         %instruments
 
-        instrumentIndex = find(strcmp(instruments, instrumentName))
+        instrumentIndex = find(strcmp(instruments, instrumentName));
 
         if isempty(instrumentIndex)
             nInstruments = nInstruments + 1;
@@ -31,8 +31,8 @@ function [] = updateModelData(dataCell, overwrite)
             modelData{instrumentIndex, 2} = cell(1, 2);
         end
 
-        i
-        dataCell
+        %i
+        %dataCell
         m = size(dataCell{i, 2}, 1);    % number of rows in given instrument data
         for j = 1:m
 
